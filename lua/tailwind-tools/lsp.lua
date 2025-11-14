@@ -124,7 +124,7 @@ end
 ---@module 'lspconfig.configs'
 
 ---@param server_config TailwindTools.ServerOption
----@param lspconfig { tailwindcss: lspconfig.Config }
+---@param lspconfig { tailwindcss: vim.lsp.Config }
 M.setup = function(server_config, lspconfig)
   local conf = { settings = {} }
   conf.on_attach = M.make_on_attach(server_config.on_attach)
@@ -144,7 +144,7 @@ M.setup = function(server_config, lspconfig)
     dynamicRegistration = true,
   }
 
-  lspconfig.tailwindcss.setup(conf)
+  vim.lsp.config.tailwindcss.setup(conf)
 end
 
 ---@type fun(lspconfig: any)
