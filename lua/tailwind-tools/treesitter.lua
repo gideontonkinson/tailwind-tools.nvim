@@ -50,7 +50,7 @@ M.find_class_ranges = function(bufnr, ft, filters)
     return results
   end
 
-  if vim.version().minor >= 10 then parser:parse(true) end
+  parser:parse()
 
   parser:for_each_tree(function(tree, lang_tree)
     local root = tree:root()
@@ -59,10 +59,12 @@ M.find_class_ranges = function(bufnr, ft, filters)
 
     if not query then return end
 
-    ---@diagnostic disable-next-line: redundant-parameter
-    for id, node, metadata in query:iter_captures(root, bufnr, 0, -1, { all = true }) do
+    for id, node, metadata in query:iter_captures(root, bufnr, 0, -1) do
       local capture_id = query.captures[id]
-      local capture_metadata = metadata[id] or {} --[[@as TailwindTools.CaptureMetadata]]
+      local raw_meta = metadata[id]
+      local capture_metadata = (type(raw_meta) == "table" and raw_meta[1] ~= nil and type(raw_meta[1]) == "table")
+        and raw_meta[1]
+        or (raw_meta or {}) --[[@as TailwindTools.CaptureMetadata]]
 
       if capture_id:find("tailwind") and matches_filters(filters, capture_metadata) then
         results[#results + 1] = get_class_range(node, capture_metadata, capture_id)
